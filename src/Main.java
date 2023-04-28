@@ -1,7 +1,9 @@
 public class Main {
+    public void insertionSort(){
+
+    }
+
     public static void main(String[] args) {
-        System.out.println("Hello world!");
-        System.out.println("asdasd");
-        System.out.println("asdasd");
+
     }
 }
