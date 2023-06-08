@@ -242,8 +242,6 @@ public class Sort {
             bufferedWriter.newLine();
             bufferedWriter.close();
 
-            System.out.println("Data has been written to the file.");
-
 
         } catch (IOException e) {
             e.printStackTrace();
