@@ -406,7 +406,7 @@ public class Sort {
             bubbleSort(hugeBubbleSortTable);
             endTime = System.nanoTime();
             System.out.println("After bubble sort for huge unsorted array:");
-            //System.out.println(Arrays.toString(hugeMergeSortTable));
+
             timeElapsed = endTime - startTime;
             System.out.println("Operation time: " + timeElapsed + " nanoseconds = "+ timeElapsed/1000 + " microseconds\n");
             bufferedWriter.append(timeElapsed + ",");
@@ -429,7 +429,8 @@ public class Sort {
 
             timeElapsed = endTime - startTime;
             System.out.println("Operation time: " + timeElapsed + " nanoseconds = "+ timeElapsed/1000 + " microseconds\n");
-            bufferedWriter.append((char) timeElapsed);
+            String stringValue = String.valueOf(timeElapsed);
+            bufferedWriter.append(stringValue);
 
             bufferedWriter.newLine();
             bufferedWriter.close();
