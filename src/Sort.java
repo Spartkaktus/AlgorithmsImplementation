@@ -66,19 +66,70 @@ public class Sort {
         mergeSort(A, 0, A.length - 1);
     }
 
+    public static void swap(double[] A, int i, int j) {
+        double temp = A[i];
+        A[i] = A[j];
+        A[j] = temp;
+    }
+    //partition will be used in quicksort
+    public static int partition(double[] A, int p, int r) {
+        double x = A[r];
+        int i = p - 1;
+        for (int j = p; j <= r - 1; j++) {
+            if (A[j] <= x) {
+                i++;
+                swap(A, i, j);
+            }
+        }
+        swap(A, i + 1, r);
+        return i + 1;
+    }
+
+    public static void quickSort(double[] A, int p, int r) {
+        if (p < r) {
+            int q = partition(A, p, r);
+            quickSort(A, p, q - 1);
+            quickSort(A, q + 1, r);
+        }
+    }
+
+    public static void countingSort(double[] A, double[] B, double k) {
+        int[] C = new int[(int) (k + 1)];
+
+        for (int i = 0; i < A.length; i++)
+            C[(int) A[i]]++;
+        // C[i] now contains equal i elements
+        for (int i = 1; i < C.length; i++)
+            C[i] += C[i - 1];
+        // C[i] now contains a number of elements less than or equal to i.
+
+        for (int i = A.length - 1; i >= 0; i--) {
+            B[C[(int) A[i]] - 1] = A[i];
+            C[(int) A[i]]--;
+        }
+    }
+
+    public static void bubbleSort(double[] A) {
+        int n = A.length;
+
+        for (int i = 0; i < n - 1; i++) {
+            for (int j = 0; j < n - i - 1; j++) {
+                if (A[j] > A[j + 1]) {
+                    // Swap array[j] and array[j + 1]
+                    double temp = A[j];
+                    A[j] = A[j + 1];
+                    A[j + 1] = temp;
+                }
+            }
+        }
+    }
+
     public static void main(String[] args) {
-        String fileName = "output.txt"; // Specify the file name or path
+        String fileName = "output.txt";
 
         try {
-            // Create a FileWriter object with the file name
             FileWriter fileWriter = new FileWriter(fileName,true);
-
-            // Create a BufferedWriter object using the FileWriter
             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-
-
-
-
 
         int hugeSize = 500000;
         int smallSize = 30;
@@ -88,7 +139,7 @@ public class Sort {
 
 
 
-        //wypełnianie tablic-templatek
+        //filling template arrays
         Random random = new Random();
         for (int i = 0; i < hugeTemplateTable.length; i++) {
             double n = random.nextDouble() * 1000;
@@ -105,7 +156,7 @@ public class Sort {
         double[] smallPartiallySortedTemplateTable = smallTemplateTable.clone();
 
 
-        //tworzenie częściowo posortowanych tablic templatek
+        //creating partly sorted template arrays
         Arrays.sort(hugePartiallySortedTemplateTable, 0, hugeSize/2);
         Arrays.sort(smallPartiallySortedTemplateTable, 0, smallSize/2);
 
@@ -114,131 +165,272 @@ public class Sort {
         double[] smallInsertionSortTable = smallTemplateTable.clone();
         double[] hugeMergeSortTable = hugeTemplateTable.clone();
         double[] smallMergeSortTable = smallTemplateTable.clone();
+        double[] hugeQuickSortTable = hugeTemplateTable.clone();
+        double[] smallQuickSortTable = smallTemplateTable.clone();
+        double[] hugeCountingSortTable = hugeTemplateTable.clone();
+        double[] helpHugeCountingSortTable = new double[hugeCountingSortTable.length];
+        double[] smallCountingSortTable = smallTemplateTable.clone();
+        double[] helpHSmallCountingSortTable = new double[smallCountingSortTable.length];
+        double[] hugeBubbleSortTable = hugeTemplateTable.clone();
+        double[] smallBubbleSortTable = smallTemplateTable.clone();
 
         double[] hugePartiallySortedInsertionSortTable = hugePartiallySortedTemplateTable.clone();
         double[] smallPartiallySortedInsertionSortTable = smallPartiallySortedTemplateTable.clone();
         double[] hugePartiallySortedMergeSortTable = hugePartiallySortedTemplateTable.clone();
         double[] smallPartiallySortedMergeSortTable = smallPartiallySortedTemplateTable.clone();
+        double[] hugePartiallySortedQuickSortTable = hugePartiallySortedTemplateTable.clone();
+        double[] smallPartiallySortedQuickSortTable = smallPartiallySortedTemplateTable.clone();
+        double[] hugePartiallySortedCountingSortTable = hugePartiallySortedTemplateTable.clone();
+        double[] helpHugePartiallySortedCountingSortTable = new double[hugePartiallySortedTemplateTable.length];
+        double[] smallPartiallySortedCountingSortTable = smallPartiallySortedTemplateTable.clone();
+        double[] helpSmallPartiallySortedCountingSortTable = new double[smallPartiallySortedTemplateTable.length];
+        double[] smallPartiallySortedBubbleSortTable = smallPartiallySortedTemplateTable.clone();
+        double[] hugePartiallySortedBubbleSortTable = hugePartiallySortedTemplateTable.clone();
 
-
-//        System.out.println("przed sortowaniem");
-//        System.out.println(Arrays.toString(smallTemplateTable));
-//        System.out.println("czesciow posortowane: ");
-//        System.out.println(Arrays.toString(smallPartiallySortedTemplateTable));
-
-//        System.out.println("Przed insertion sortem dla dużej tablicy:");
-//        System.out.println(Arrays.toString(hugeInsertionSortTable));
         long startTime = System.nanoTime();
         insertionSort(hugeInsertionSortTable);
         long endTime = System.nanoTime();
-        System.out.println("Po insertion sorcie dla dużej nieposortowanej tablicy:");
-            bufferedWriter.append("--------------------------NOWA PRÓBA--------------------------");
-            bufferedWriter.newLine();
-            bufferedWriter.append("Po insertion sorcie dla dużej nieposortowanej tablicy:");
-            bufferedWriter.newLine(); // Write a new line
-//        System.out.println(Arrays.toString(hugeInsertionSortTable));
+        System.out.println("After insertion sort for huge unsorted array:");
+
         long timeElapsed = endTime - startTime;
-        System.out.println("Czas operacji: " + timeElapsed + " nanosekund = "+ timeElapsed/1000000 + " milisekund\n");
-            bufferedWriter.append("Czas operacji: " + timeElapsed + " nanosekund = "+ timeElapsed/1000000 + " milisekund\n");
-            bufferedWriter.newLine();
+            System.out.println("Operation time: " + timeElapsed + " nanoseconds = "+ timeElapsed/1000 + " microseconds\n");
+            bufferedWriter.append(timeElapsed + ",");
+
 
         startTime = System.nanoTime();
         insertionSort(hugePartiallySortedInsertionSortTable);
         endTime = System.nanoTime();
-        System.out.println("Po insertion sorcie dla dużej czesciowo posortowanej tablicy:");
-            bufferedWriter.append("Po insertion sorcie dla dużej czesciowo posortowanej tablicy:");
-            bufferedWriter.newLine();
-        //System.out.println(Arrays.toString(hugeInsertionSortTable));
+        System.out.println("After insertion sort for huge partially sorted array:");
         timeElapsed = endTime - startTime;
-        System.out.println("Czas operacji: " + timeElapsed + " nanosekund = "+ timeElapsed/1000000 + " milisekund\n");
-            bufferedWriter.append("Czas operacji: " + timeElapsed + " nanosekund = "+ timeElapsed/1000000 + " milisekund\n");
-            bufferedWriter.newLine();
+            System.out.println("Operation time: " + timeElapsed + " nanoseconds = "+ timeElapsed/1000 + " microseconds\n");
+            bufferedWriter.append(timeElapsed + ",");
 
 
-//        System.out.println("Przed insertion sortem dla małej tablicy:");
-//        System.out.println(Arrays.toString(smallInsertionSortTable));
+
         startTime = System.nanoTime();
         insertionSort(smallInsertionSortTable);
         endTime = System.nanoTime();
-        System.out.println("Po insertion sorcie dla małej nieposortowanej tablicy:");
-            bufferedWriter.append("Po insertion sorcie dla małej nieposortowanej tablicy:");
-            bufferedWriter.newLine();
-//        System.out.println(Arrays.toString(smallInsertionSortTable));
+        System.out.println("After insertion sort for small unsorted sorted array:");
         timeElapsed = endTime - startTime;
-        System.out.println("Czas operacji: " + timeElapsed + " nanosekund = "+ timeElapsed/1000000 + " milisekund\n");
-        bufferedWriter.write("Czas operacji: " + timeElapsed + " nanosekund = "+ timeElapsed/1000000 + " milisekund\n");
+            System.out.println("Operation time: " + timeElapsed + " nanoseconds = "+ timeElapsed/1000 + " microseconds\n");
+            bufferedWriter.append(timeElapsed + ",");
 
 
         startTime = System.nanoTime();
         insertionSort(smallPartiallySortedInsertionSortTable);
         endTime = System.nanoTime();
-        System.out.println("Po insertion sorcie dla małej częściowo posortowanej tablicy:");
-
-            bufferedWriter.newLine();
-        bufferedWriter.append("Po insertion sorcie dla małej częściowo posortowanej tablicy:");
-        bufferedWriter.newLine();
-//        System.out.println(Arrays.toString(smallPartiallyInsertionSortTable));
+        System.out.println("After insertion sort for small partially sorted array:");
         timeElapsed = endTime - startTime;
-        System.out.println("Czas operacji: " + timeElapsed + " nanosekund = "+ timeElapsed/1000000 + " milisekund\n");
-        bufferedWriter.append("Czas operacji: " + timeElapsed + " nanosekund = "+ timeElapsed/1000000 + " milisekund\n");
-        bufferedWriter.newLine();
+            System.out.println("Operation time: " + timeElapsed + " nanoseconds = "+ timeElapsed/1000 + " microseconds\n");
+            bufferedWriter.append(timeElapsed + ",");
 
-
-//        System.out.println("Przed merge sortem dla małej tablicy:");
-        //System.out.println(Arrays.toString(smallMergeSortTable));
         startTime = System.nanoTime();
         mergeSort(smallMergeSortTable);
         endTime = System.nanoTime();
-        System.out.println("Po merge sorcie dla małej nieposortowanej tablicy:");
-        bufferedWriter.append("Po merge sorcie dla małej nieposortowanej tablicy:");
-        bufferedWriter.newLine();
-        //System.out.println(Arrays.toString(smallMergeSortTable));
+        System.out.println("After merge sort for small unsorted array:");
         timeElapsed = endTime - startTime;
-        System.out.println("Czas operacji: " + timeElapsed + " nanosekund = "+ timeElapsed/1000000 + " milisekund\n");
-        bufferedWriter.append("Czas operacji: " + timeElapsed + " nanosekund = "+ timeElapsed/1000000 + " milisekund\n");
-        bufferedWriter.newLine();
+            System.out.println("Operation time: " + timeElapsed + " nanoseconds = "+ timeElapsed/1000 + " microseconds\n");
+            bufferedWriter.append(timeElapsed + ",");
 
-//        System.out.println("Przed merge sortem dla dużej tablicy:");
-        //System.out.println(Arrays.toString(hugeMergeSortTable));
+
+
         startTime = System.nanoTime();
         mergeSort(hugeMergeSortTable);
         endTime = System.nanoTime();
-        System.out.println("Po merge sort dla dużej nieposortowanej tablicy:");
-        bufferedWriter.append("Po merge sort dla dużej nieposortowanej tablicy:");
-            bufferedWriter.newLine();
-        //System.out.println(Arrays.toString(hugeMergeSortTable));
+        System.out.println("After merge sort for huge unsorted array:");
         timeElapsed = endTime - startTime;
-        System.out.println("Czas operacji: " + timeElapsed + " nanosekund = "+ timeElapsed/1000000 + " milisekund\n");
-        bufferedWriter.append("Czas operacji: " + timeElapsed + " nanosekund = "+ timeElapsed/1000000 + " milisekund\n");
-            bufferedWriter.newLine();
+        System.out.println("Operation time: " + timeElapsed + " nanoseconds = "+ timeElapsed/1000 + " microseconds\n");
+            bufferedWriter.append(timeElapsed + ",");
+
 
         startTime = System.nanoTime();
         mergeSort(smallPartiallySortedMergeSortTable);
         endTime = System.nanoTime();
-        System.out.println("Po merge sorcie dla małej częściowo posortowanej tablicy:");
-        bufferedWriter.append("Po merge sorcie dla małej częściowo posortowanej tablicy:");
-            bufferedWriter.newLine();
-        //System.out.println(Arrays.toString(smallMergeSortTable));
+            System.out.println("After merge sort for small partially sorted array:");
+
         timeElapsed = endTime - startTime;
-        System.out.println("Czas operacji: " + timeElapsed + " nanosekund = "+ timeElapsed/1000000 + " milisekund\n");
-        bufferedWriter.append("Czas operacji: " + timeElapsed + " nanosekund = "+ timeElapsed/1000000 + " milisekund\n");
-            bufferedWriter.newLine();
+        System.out.println("Operation time: " + timeElapsed + " nanoseconds = "+ timeElapsed/1000 + " microseconds\n");
+            bufferedWriter.append(timeElapsed + ",");
+
 
         startTime = System.nanoTime();
         mergeSort(hugePartiallySortedMergeSortTable);
         endTime = System.nanoTime();
-        System.out.println("Po merge sorcie dla dużej częściowo posortowanej tablicy:");
-        bufferedWriter.append("Po merge sorcie dla dużej częściowo posortowanej tablicy:");
-            bufferedWriter.newLine();
-        //System.out.println(Arrays.toString(smallMergeSortTable));
+            System.out.println("After merge sort for huge partially sorted array:");
+
         timeElapsed = endTime - startTime;
-        System.out.println("Czas operacji: " + timeElapsed + " nanosekund = "+ timeElapsed/1000000 + " milisekund\n");
-        bufferedWriter.append("Czas operacji: " + timeElapsed + " nanosekund = "+ timeElapsed/1000000 + " milisekund\n");
-        bufferedWriter.append("-------------------------KONIEC PRÓBY-------------------------");
-            bufferedWriter.newLine();
-        bufferedWriter.append("--------------------------------------------------------------");
-            bufferedWriter.newLine();
-        bufferedWriter.append("--------------------------------------------------------------");
+        System.out.println("Operation time: " + timeElapsed + " nanoseconds = "+ timeElapsed/1000 + " microseconds\n");
+            bufferedWriter.append(timeElapsed + ",");
+
+
+            startTime = System.nanoTime();
+            quickSort(smallQuickSortTable,0,smallQuickSortTable.length-1);
+            endTime = System.nanoTime();
+            System.out.println("After quick sort for small unsorted array:");
+
+            timeElapsed = endTime - startTime;
+            System.out.println("Operation time: " + timeElapsed + " nanoseconds = "+ timeElapsed/1000 + " microseconds\n");
+            bufferedWriter.append(timeElapsed + ",");
+
+
+
+            startTime = System.nanoTime();
+            quickSort(hugeQuickSortTable,0,hugeQuickSortTable.length-1);
+            endTime = System.nanoTime();
+            System.out.println("After merge sort for huge unsorted array:");
+
+
+            timeElapsed = endTime - startTime;
+            System.out.println("Operation time: " + timeElapsed + " nanoseconds = "+ timeElapsed/1000 + " microseconds\n");
+            bufferedWriter.append(timeElapsed + ",");
+
+
+
+            startTime = System.nanoTime();
+            quickSort(smallPartiallySortedQuickSortTable,0,smallPartiallySortedQuickSortTable.length-1);
+            endTime = System.nanoTime();
+            System.out.println("After merge sort for small partially sorted array:");
+            timeElapsed = endTime - startTime;
+            System.out.println("Operation time: " + timeElapsed + " nanoseconds = "+ timeElapsed/1000 + " microseconds\n");
+            bufferedWriter.append(timeElapsed + ",");
+
+            startTime = System.nanoTime();
+            quickSort(hugePartiallySortedQuickSortTable,0,hugePartiallySortedQuickSortTable.length-1);
+            endTime = System.nanoTime();
+            System.out.println("After counting sort for huge partially sorted array:");
+
+            timeElapsed = endTime - startTime;
+            System.out.println("Operation time: " + timeElapsed + " nanoseconds = "+ timeElapsed/1000 + " microseconds\n");
+            bufferedWriter.append(timeElapsed + ",");
+
+
+
+
+            startTime = System.nanoTime();
+
+            int maximum = (int)smallCountingSortTable[0];
+
+            // Find the maximum value in the array
+            for (int i = 1; i < smallCountingSortTable.length; i++) {
+                if (smallCountingSortTable[i] > maximum)
+                    maximum = (int)smallCountingSortTable[i];
+            }
+
+
+            countingSort(smallCountingSortTable, helpHSmallCountingSortTable,maximum);
+            endTime = System.nanoTime();
+
+            System.out.println("After counting sort for small unsorted array:");
+            timeElapsed = endTime - startTime;
+            System.out.println("Operation time: " + timeElapsed + " nanoseconds = "+ timeElapsed/1000 + " microseconds\n");
+            bufferedWriter.append(timeElapsed + ",");
+
+
+
+
+
+            startTime = System.nanoTime();
+
+            maximum = (int)hugeCountingSortTable[0];
+
+            // Find the maximum value in the array
+            for (int i = 1; i < hugeCountingSortTable.length; i++) {
+                if (hugeCountingSortTable[i] > maximum)
+                    maximum = (int)hugeCountingSortTable[i];
+            }
+
+
+            countingSort(hugeCountingSortTable, helpHugeCountingSortTable,maximum);
+            endTime = System.nanoTime();
+
+            timeElapsed = endTime - startTime;
+            System.out.println("After counting sort for huge unsorted array:");
+            System.out.println("Operation time: " + timeElapsed + " nanoseconds = "+ timeElapsed/1000 + " microseconds\n");
+            bufferedWriter.append(timeElapsed + ",");
+
+
+            startTime = System.nanoTime();
+
+            maximum = (int)hugePartiallySortedCountingSortTable[0];
+
+            // Find the maximum value in the array
+            for (int i = 1; i < hugePartiallySortedCountingSortTable.length; i++) {
+                if (hugePartiallySortedCountingSortTable[i] > maximum)
+                    maximum = (int)hugePartiallySortedCountingSortTable[i];
+            }
+
+
+            countingSort(hugePartiallySortedCountingSortTable, helpHugePartiallySortedCountingSortTable,maximum);
+            endTime = System.nanoTime();
+
+            timeElapsed = endTime - startTime;
+            System.out.println("After counting sort for huge partially sorted array:");
+            System.out.println("Operation time: " + timeElapsed + " nanoseconds = "+ timeElapsed/1000 + " microseconds\n");
+            bufferedWriter.append(timeElapsed + ",");
+
+
+            startTime = System.nanoTime();
+
+            maximum = (int)smallPartiallySortedCountingSortTable[0];
+
+            // Find the maximum value in the array
+            for (int i = 1; i < smallPartiallySortedCountingSortTable.length; i++) {
+                if (smallPartiallySortedCountingSortTable[i] > maximum)
+                    maximum = (int)smallPartiallySortedCountingSortTable[i];
+            }
+
+
+            countingSort(smallPartiallySortedCountingSortTable, helpSmallPartiallySortedCountingSortTable,maximum);
+            endTime = System.nanoTime();
+
+
+            timeElapsed = endTime - startTime;
+
+            System.out.println("After counting sort for small partially sorted array:");
+            System.out.println("Operation time: " + timeElapsed + " nanoseconds = "+ timeElapsed/1000 + " microseconds\n");
+
+            bufferedWriter.append(timeElapsed + ",");
+
+
+            startTime = System.nanoTime();
+            bubbleSort(smallBubbleSortTable);
+            endTime = System.nanoTime();
+            System.out.println("After bubble sort for small unsorted array:");
+            timeElapsed = endTime - startTime;
+            System.out.println("Operation time: " + timeElapsed + " nanoseconds = "+ timeElapsed/1000 + " microseconds\n");
+            bufferedWriter.append(timeElapsed + ",");
+
+
+
+            startTime = System.nanoTime();
+            bubbleSort(hugeBubbleSortTable);
+            endTime = System.nanoTime();
+            System.out.println("After bubble sort for huge unsorted array:");
+            //System.out.println(Arrays.toString(hugeMergeSortTable));
+            timeElapsed = endTime - startTime;
+            System.out.println("Operation time: " + timeElapsed + " nanoseconds = "+ timeElapsed/1000 + " microseconds\n");
+            bufferedWriter.append(timeElapsed + ",");
+
+
+            startTime = System.nanoTime();
+            bubbleSort(smallPartiallySortedBubbleSortTable);
+            endTime = System.nanoTime();
+            System.out.println("After bubble sort for small partially sorted array:");
+
+            timeElapsed = endTime - startTime;
+            System.out.println("Operation time: " + timeElapsed + " nanoseconds = "+ timeElapsed/1000 + " microseconds\n");
+            bufferedWriter.append(timeElapsed + ",");
+
+
+            startTime = System.nanoTime();
+            bubbleSort(hugePartiallySortedBubbleSortTable);
+            endTime = System.nanoTime();
+            System.out.println("After bubble sort for huge partially sorted array:");
+
+            timeElapsed = endTime - startTime;
+            System.out.println("Operation time: " + timeElapsed + " nanoseconds = "+ timeElapsed/1000 + " microseconds\n");
+            bufferedWriter.append((char) timeElapsed);
+
             bufferedWriter.newLine();
             bufferedWriter.close();
 
